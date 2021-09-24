@@ -1,28 +1,30 @@
-// --------------
-// IMPORTS
-// --------------
-import "tfconfig" // this is the wiring of the signal from tfconfig
+import "tfplan/v2" as tfplan
 
-// -----------------------
-// LIST - ALLOWED ANIMALS 
-// -----------------------
-allowed_animals = [
-    "elephant",
-    "rhinoceros",
-    "buffalo",
-    "lion",
-    "leopard",
-]
+allManagedDisks = filter tfplan.resource_changes as _, resource_changes {
+	resource_changes.type is "azurerm_managed_disk" and
+		resource_changes.mode is "managed" and
+		(resource_changes.change.actions contains "create" or
+			resource_changes.change.actions is ["update"])
+}
 
-// --------------
-// DEBUG LOGGING
-// --------------
-print("The animal of the run is:", tfconfig.variables.animals.default)
+print("CIS 7.1: Ensure that managed disks are encrypted")
 
-// ----------
-// MAIN RULE
-// ----------
-main = rule { 
-    (all tfconfig.variables.animals.default as nameoftheanimal { nameoftheanimal in allowed_animals })
-    // take all the variables default and call it "nameoftheanimal" and then do a for/if statement, if it's in this list return true/false
+deny_undefined_encryption_settings = rule {
+	all allManagedDisks as _, disks {
+		keys(disks.change.after) contains "encryption_settings" and
+			length(disks.change.after.encryption_settings) != 0
+	}
+}
+
+deny_unencrypted_managed_disk = rule when deny_undefined_encryption_settings is true {
+	all allManagedDisks as _, disks {
+		all disks.change.after.encryption_settings as encryption_settings {
+			encryption_settings.enabled is true
+		}
+	}
+}
+
+main = rule {
+	deny_undefined_encryption_settings and
+	deny_unencrypted_managed_disk
 }
