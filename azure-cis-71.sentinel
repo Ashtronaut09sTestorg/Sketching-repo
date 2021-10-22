@@ -16,7 +16,7 @@ deny_undefined_encryption_settings = rule {
 	}
 }
 
-deny_unencrypted_managed_disk = rule when deny_undefined_encryption_settings is true {
+deny_unencrypted_managed_disk = rule when deny_undefined_encryption_settings is false {
 	all allManagedDisks as _, disks {
 		all disks.change.after.encryption_settings as encryption_settings {
 			encryption_settings.enabled is true
