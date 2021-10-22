@@ -1,6 +1,6 @@
 variable "environment" {
     default = ""
-    description = "The notnot this is a test of the environment in which you would like to provision"
+    description = "The will it fial? this is a test of the environment in which you would like to provision"
 }
 
 resource "random_pet" "host" {
