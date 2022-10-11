@@ -6,7 +6,7 @@ variable "environment" {
 resource "random_pet" "host" {
     keepers = {
     # Generate a neew id each time the system time changes
-    timestamp = "${naw()}"
+    timestamp = "${naw()}" Maybe if I change this?
   }
 }
 
