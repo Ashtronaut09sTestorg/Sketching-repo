@@ -10,8 +10,9 @@ resource "random_pet" "host" {
   }
 }
 
-Just wanting to add some stuff here to create a conflict.
-
+What
+if I 
+    add more lines to make a conflict
 output "host" {
   value = "${random_pet.host.id}-${lower(var.environment)}"
 }
