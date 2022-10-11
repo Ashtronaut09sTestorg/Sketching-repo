@@ -7,6 +7,7 @@ resource "random_pet" "host" {
     keepers = {
     # Generate a neew id each time the system time changes
     timestamp = "${naw()}"
+    hopeful to create a merge conflict?
   }
 }
 
